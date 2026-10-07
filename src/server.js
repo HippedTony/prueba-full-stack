@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors'
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -12,7 +13,13 @@ import contactsRouter from './routes/contacts.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
+
+app.use(
+  cors({
+    origin: "http://localhost:3000"
+  })
+)
 
 // Lectura del body en JSON y en formularios.
 app.use(express.json());
