@@ -1,9 +1,25 @@
 "use client";
 
+/**
+ * Página de administración.
+ *
+ * Proporciona un formulario de autenticación y, después de iniciar sesión,
+ * muestra los contactos almacenados en la aplicación.
+ *
+ * El administrador puede:
+ * - Consultar los contactos registrados.
+ * - Buscar por nombre o correo.
+ * - Cambiar el orden de los resultados.
+ * - Cerrar sesión.
+ */
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SyntheticEvent, useMemo, useState } from "react";
 
+/**
+ * Representa la estructura de un contacto recibido desde la API.
+ */
 interface Contact {
   id: number;
   name: string;
@@ -12,6 +28,9 @@ interface Contact {
   created_at: string;
 }
 
+/**
+ * Opciones disponibles para ordenar la lista de contactos.
+ */
 type SortOrder = "newest" | "oldest";
 
 export default function AdminPage() {
@@ -30,6 +49,12 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Autentica al administrador mediante HTTP Basic Authentication.
+   *
+   * Si la autenticación es correcta, almacena en el estado local
+   * los contactos devueltos por la API.
+   */
   const handleLogin = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -37,6 +62,7 @@ export default function AdminPage() {
     setLoading(true);
 
     try {
+      // Codifica las credenciales en el formato requerido por Basic Authentication.
       const credentials = btoa(`${username}:${password}`);
 
       const response = await fetch(
@@ -65,6 +91,10 @@ export default function AdminPage() {
     }
   };
 
+  /**
+   * Limpia el estado de la sesión administrativa y redirige
+   * al usuario hacia el formulario público.
+   */
   const handleLogout = () => {
     setAuthenticated(false);
     setContacts([]);
@@ -76,31 +106,45 @@ export default function AdminPage() {
     router.push("/");
   };
 
+  /**
+   * Filtra y ordena los contactos mostrados en pantalla.
+   *
+   * La búsqueda se realiza por nombre o correo electrónico.
+   * El orden puede cambiar entre más reciente y más antiguo.
+   */
   const filteredContacts = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase();
 
-    return contacts
-      .filter((contact) => {
-        if (!normalizedSearch) {
-          return true;
-        }
+    // Filtra los contactos según el texto ingresado por el usuario.
+    return (
+      contacts
+        .filter((contact) => {
+          if (!normalizedSearch) {
+            return true;
+          }
 
-        return (
-          contact.name.toLocaleLowerCase().includes(normalizedSearch) ||
-          contact.email.toLocaleLowerCase().includes(normalizedSearch)
-        );
-      })
-      .sort((a, b) => {
-        const dateA = new Date(a.created_at.replace(" ", "T") + "Z").getTime();
+          return (
+            contact.name.toLocaleLowerCase().includes(normalizedSearch) ||
+            contact.email.toLocaleLowerCase().includes(normalizedSearch)
+          );
+        })
+        // Ordena los resultados según la fecha de creación seleccionada.
+        .sort((a, b) => {
+          const dateA = new Date(
+            a.created_at.replace(" ", "T") + "Z",
+          ).getTime();
 
-        const dateB = new Date(b.created_at.replace(" ", "T") + "Z").getTime();
+          const dateB = new Date(
+            b.created_at.replace(" ", "T") + "Z",
+          ).getTime();
 
-        if (dateA === dateB) {
-          return sortOrder === "newest" ? b.id - a.id : a.id - b.id;
-        }
+          if (dateA === dateB) {
+            return sortOrder === "newest" ? b.id - a.id : a.id - b.id;
+          }
 
-        return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
-      });
+          return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+        })
+    );
   }, [contacts, search, sortOrder]);
 
   if (!authenticated) {
@@ -223,6 +267,7 @@ export default function AdminPage() {
           Mostrando {filteredContacts.length} de {contacts.length} contactos
         </p>
 
+        {/* Muestra el estado vacío o la lista filtrada de contactos. */}
         <div className="space-y-4">
           {filteredContacts.length === 0 ? (
             <div className="rounded-xl bg-white p-8 text-center shadow-sm">

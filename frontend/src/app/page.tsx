@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * Página pública de contacto.
+ *
+ * Muestra el formulario de contacto y realiza validaciones del lado
+ * del cliente antes de enviar la información a la API de Express.
+ */
+
 import Link from "next/link";
 import { SyntheticEvent, useState } from "react";
 
@@ -12,6 +19,12 @@ export default function Home() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Valida y envía el formulario de contacto.
+   *
+   * Maneja los estados de carga, éxito y error, y limpia el formulario
+   * después de un envío exitoso.
+   */
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -73,6 +86,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
+      {/* Navegación hacia el panel de administración. */}
       <Link
         href="/admin"
         className="absolute top-5 right-10 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium transition duration-300 hover:bg-black hover:text-white"

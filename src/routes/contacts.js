@@ -1,7 +1,13 @@
-// ─────────────────────────────────────────────────────────────
-//  Rutas de contactos. Los stubs responden 501 a propósito:
-//  son los que tienes que construir.
-// ─────────────────────────────────────────────────────────────
+/**
+ * Rutas de la API para la gestión de contactos.
+ *
+ * Incluye endpoints para:
+ * - Crear nuevos contactos desde el formulario público.
+ * - Consultar todos los contactos desde el panel de administración.
+ *
+ * POST /api/contacts es público.
+ * GET /api/contacts está protegido con autenticación básica.
+ */
 import { Router } from 'express';
 
 import db from '../db.js';
@@ -11,9 +17,21 @@ const router = Router();
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// POST /api/contacts  —  PÚBLICO
-// Recibe el formulario de contacto y lo guarda en la base de datos.
-// TODO: valida en el servidor (no confíes solo en el front) y guarda.
+/**
+ * POST /api/contacts
+ *
+ * Crea un nuevo contacto después de validar y normalizar los datos recibidos.
+ *
+ * Campos requeridos:
+ * - name
+ * - email
+ * - message
+ *
+ * Respuestas:
+ * - 201 si el contacto se crea correctamente.
+ * - 400 si los datos enviados no son válidos.
+ * - 500 si ocurre un error inesperado en el servidor.
+ */
 router.post('/', (req, res, next) => {
   try {
     const { name, email, message } = req.body;
@@ -46,6 +64,7 @@ router.post('/', (req, res, next) => {
       });
     }
 
+    // Utiliza una consulta parametrizada para insertar los datos de forma segura.
     const statement = db.prepare(`
         INSERT INTO contacts (name, email, message)
         VALUES (?, ?, ?)
@@ -71,11 +90,17 @@ router.post('/', (req, res, next) => {
   }
 });
 
-// GET /api/contacts  —  PROTEGIDO (vista de administración)
-// Devuelve los contactos guardados, del más reciente al más antiguo.
-// TODO: léelos de la base de datos y devuélvelos.
+/**
+ * GET /api/contacts
+ *
+ * Devuelve todos los contactos almacenados.
+ * Este endpoint está protegido mediante autenticación básica.
+ *
+ * Los contactos se devuelven inicialmente del más reciente al más antiguo.
+ */
 router.get('/', requireAuth, (req, res, next) => {
   try {
+    // Utiliza el id como criterio secundario cuando dos registros tienen la misma fecha.
     const contacts = db.prepare(`
         SELECT * FROM contacts ORDER BY created_at DESC, id DESC
       `)

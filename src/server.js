@@ -1,7 +1,8 @@
-// ─────────────────────────────────────────────────────────────
-//  Servidor base — YA FUNCIONA. No necesitas tocar casi nada aquí.
-//  Arranca con:  npm run dev   →   http://localhost:3000
-// ─────────────────────────────────────────────────────────────
+/**
+ * Punto de entrada de la aplicación.
+ *
+ * Configura e inicia la API de Express utilizada por el gestor de contactos.
+ */
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors'
@@ -15,6 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Permite peticiones desde el frontend de Next.js durante el desarrollo local.
 app.use(
   cors({
     origin: "http://localhost:3000"

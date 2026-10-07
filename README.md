@@ -1,89 +1,381 @@
-# Prueba Técnica Full Stack — Repositorio base (Node)
+# Mini Gestor de Contactos
 
-Este repo existe para que **no pierdas tiempo en configuración**. Lo aburrido ya
-está resuelto; lo que evaluamos lo construyes tú.
+Aplicación Full Stack desarrollada como prueba técnica para gestionar contactos o leads enviados desde un formulario público.
 
-Recuerda: la parte práctica está pensada para **un máximo de 3 horas**. No pasa
-nada si usas IA — solo pedimos que entiendas y puedas explicar lo que entregues.
+El flujo principal de la aplicación es:
+
+```text
+Formulario público → API propia → SQLite → Panel de administración
+```
+
+La aplicación permite registrar contactos mediante un formulario público y posteriormente consultarlos desde un panel de administración protegido mediante autenticación básica.
 
 ---
 
-## Arranque rápido
+## Tecnologías utilizadas
 
-Necesitas **Node 18.18+**.
+### Frontend
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+
+### Backend
+
+- Node.js (Express)
+
+### Base de datos
+
+- SQLite
+
+### Autenticación
+
+- HTTP Basic Authentication
+
+---
+
+## Funcionalidades
+
+### Formulario público
+
+El formulario permite registrar un nuevo contacto utilizando:
+
+- Nombre
+- Correo electrónico
+- Mensaje
+
+Incluye validación tanto en el cliente como en el servidor.
+
+Al enviar correctamente el formulario, la información es enviada a la API y almacenada en SQLite.
+
+---
+
+### Panel de administración
+
+El panel de administración permite:
+
+- Iniciar sesión mediante usuario y contraseña.
+- Consultar todos los contactos registrados inicialmente del más reciente al más antiguo.
+- Buscar contactos por nombre o por correo electrónico.
+- Ordenar contactos del más reciente al más antiguo y viceversa.
+- Cerrar sesión.
+- Navegar entre el formulario público y el panel de administración.
+
+---
+
+## Estructura general del proyecto
+
+```text
+prueba-full-stack/
+│
+├── db/
+│   └── app.sqlite
+│
+├── frontend/
+│   ├── src/
+│   │   └── app/
+│   │       ├── page.tsx
+│   │       └── admin/
+│   │           └── page.tsx
+│   │
+│   └── package.json
+│
+├── src/
+│   ├── middleware/
+│   │   └── auth.js
+│   │
+│   ├── routes/
+│   │   └── contact.js
+│   │
+│   ├── db.js
+│   └── server.js
+│
+├── .env
+└── package.json
+```
+
+---
+
+# Instalación y ejecución local
+
+## 1. Requisitos
+
+Es necesario tener instalado:
+
+- Node.js
+- npm
+- Git
+
+Se necesita la version 18 o superior de Node.js para ejecutar la aplicación.
+
+---
+
+## 2. Clonar el repositorio
+
+```bash
+git clone https://github.com/HippedTony/prueba-full-stack.git
+```
+
+Entrar al proyecto:
+
+```bash
+cd prueba-full-stack
+```
+
+---
+
+## 3. Instalar dependencias del backend
+
+Desde la raíz del proyecto:
 
 ```bash
 npm install
-cp .env.example .env     # en Windows: copy .env.example .env
+```
+
+---
+
+## 4. Configurar las variables de entorno del backend
+
+Crear un archivo `.env` en la raíz del proyecto si no existe.
+
+Ejemplo:
+
+```env
+PORT=4000
+
+DATABASE_PATH=./db/app.sqlite
+
+ADMIN_USER=admin
+ADMIN_PASSWORD=admin123
+```
+
+Estas credenciales son utilizadas para acceder al panel de administración.
+
+---
+
+## 5. Ejecutar el backend
+
+Desde la raíz:
+
+```bash
 npm run dev
 ```
 
-Luego abre: http://localhost:3000/health
-Si ves `{"status":"ok","db":true}`, todo está corriendo.
+La API estará disponible en:
 
-> `npm install` compila `better-sqlite3`. En la mayoría de los sistemas usa un
-> binario precompilado y no necesitas nada extra.
+```text
+http://localhost:4000
+```
 
----
+Para verificar que el backend se encuentra activo:
 
-## El reto (resumen)
+```text
+GET http://localhost:4000/health
+```
 
-Un **mini-gestor de contactos (leads)** que funcione de punta a punta:
+La respuesta esperada es:
 
-**formulario público → tu API → base de datos → panel protegido**
-
-1. Formulario público de contacto (nombre, correo, mensaje) con validación
-   **en cliente y en servidor**.
-2. Al enviarse, el contacto se **guarda en la base de datos** vía tu API.
-3. Una **vista de administración protegida** que lista los contactos, del más
-   reciente al más antiguo.
-4. Manejo básico de errores.
-
-No sobre-ingenierices: preferimos algo simple y bien resuelto.
+```json
+{
+  "status": "ok"
+}
+```
 
 ---
 
-## Qué ya está hecho (no necesitas tocarlo)
+## 6. Instalar dependencias del frontend
 
-- Proyecto de Express que arranca con `npm run dev`.
-- Conexión a **SQLite ya configurada** (`src/db.js`) — crea el archivo solo.
-- Lectura de body JSON y de formularios.
-- Servido de estáticos desde `src/public` (por si usas HTML/CSS/JS "vanilla").
-- Ruta `/health` funcionando.
-- `.gitignore` correcto (no subas `node_modules` ni tu `.env`).
+Abrir otra terminal y entrar a:
 
-## Qué construyes tú (esto es lo que evaluamos)
+```bash
+cd frontend
+```
 
-| Dónde | Qué falta |
-|---|---|
-| `src/db.js` | Diseñar el **esquema** de la tabla de contactos. |
-| `src/routes/contacts.js` | `POST /api/contacts` (guardar) y `GET /api/contacts` (listar). |
-| `src/middleware/auth.js` | La **autenticación** del panel (ahora no protege nada). |
-| `src/public/` *(o tu front)* | El **formulario** y la **vista de administración**. |
+Instalar las dependencias:
 
-El front-end es tu decisión: puedes usar la carpeta `src/public` con vanilla, o
-montar **Astro / Next / Svelte** aparte. Lo único imprescindible es que consuma
-tu propia API.
+```bash
+npm install
+```
 
 ---
 
-## Entrega
+## 7. Configurar las variables de entorno del frontend
 
-- Este repositorio en **GitHub** con tus commits.
-- Completa la sección de abajo en este mismo README.
-- Opcional: un video corto (2–3 min) mostrándolo funcionar. **No** hace falta
-  desplegarlo; el despliegue lo conversamos en la sesión en vivo.
+Dentro de la carpeta `frontend` crear:
 
-### Para completar por el candidato
+```text
+.env.local
+```
 
-**Cómo correr mi proyecto:**
-_(si cambiaste algo del arranque, explícalo aquí)_
+Agregar:
 
-**Decisiones técnicas (3–4 puntos):**
--
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+```
 
-**Cómo usé IA:**
-_(qué le pedí, qué me dio, qué ajusté yo)_
+Esta variable indica al frontend dónde se encuentra la API de Express.
 
-**Qué dejé pendiente por tiempo y cómo lo resolvería:**
--
+---
+
+## 8. Ejecutar el frontend
+
+Dentro de la carpeta `frontend`:
+
+```bash
+npm run dev
+```
+
+La aplicación estará disponible normalmente en:
+
+```text
+http://localhost:3000
+```
+
+# Decisiones técnicas
+
+## Express como backend independiente
+
+Se decidió utilizar Express en lugar de implementar el backend mediante las API Routes de Next.js.
+
+Esto permite mantener claramente separadas las responsabilidades:
+
+```text
+Next.js
+Frontend
+
+↓
+
+Express
+API y reglas de negocio
+
+↓
+
+SQLite
+Persistencia
+```
+
+Además, permite demostrar explícitamente la comunicación entre frontend y backend mediante HTTP y JSON.
+
+---
+
+## SQLite con better-sqlite3
+
+SQLite fue utilizado ya que se tenía preconfigurado un archivo de base de datos vacío y no se requería un sistema de base de datos más complejo.
+
+---
+
+## Consultas parametrizadas
+
+Para insertar información en SQLite se utilizan consultas parametrizadas.
+
+Por ejemplo:
+
+```sql
+INSERT INTO contacts (name, email, message)
+VALUES (?, ?, ?)
+```
+
+Esto evita construir las consultas SQL concatenando directamente información proporcionada por el usuario.
+
+---
+
+## Basic Authentication
+
+Para proteger la vista administrativa se utilizó Basic Authentication.
+
+Esta decisión se tomó porque el alcance de la prueba solicitaba un login simple o Basic Auth y se buscó mantener una solución pequeña y fácil de revisar.
+
+Las credenciales no están definidas directamente en el código, sino mediante variables de entorno:
+
+```env
+ADMIN_USER
+ADMIN_PASSWORD
+```
+
+---
+
+## Filtros del lado del cliente
+
+La búsqueda y el cambio de orden del panel administrativo se realizan en el frontend.
+
+La búsqueda funciona utilizando nombre o correo electrónico.
+
+Esta solución se eligió porque el volumen esperado de información para esta prueba es pequeño y evita realizar una nueva petición a la API cada vez que el usuario escribe una letra o modifica el orden.
+
+---
+
+# Uso de Inteligencia Artificial
+
+Durante el desarrollo utilicé herramientas de Inteligencia Artificial como apoyo al proceso de implementación.
+
+La IA fue utilizada principalmente para:
+
+- Revisar la estructura inicial del proyecto.
+- Revisar validaciones tanto del cliente como del servidor.
+- Proponer mejoras de organización y legibilidad del código.
+- Revisar la implementación de filtros y ordenamiento.
+- Apoyar en la elaboración de esta documentación.
+
+Las propuestas fueron revisadas, modificadas e integradas según los requerimientos y estructura particular del proyecto.
+
+La IA fue utilizada como una herramienta de apoyo similar a consultar documentación, mientras que las decisiones finales sobre arquitectura, integración y funcionamiento fueron tomadas durante el desarrollo.
+
+---
+
+# Tiempo de desarrollo
+
+### Desarrollo principal
+
+Aproximadamente:
+
+```text
+2 horas
+```
+
+Durante este tiempo se implementaron los requerimientos principales:
+
+- Configuración de SQLite.
+- Persistencia de contactos.
+- API con Express.
+- Validaciones en frontend.
+- Validaciones en backend.
+- Formulario público.
+- Panel de administración.
+- Basic Authentication.
+- Manejo básico de errores.
+- Integración entre Next.js y Express.
+
+### Funcionalidades adicionales
+
+Después de completar los requerimientos principales se utilizaron aproximadamente:
+
+```text
+15 minutos
+```
+
+para agregar:
+
+- Navegación entre formulario y panel administrativo.
+- Botón de logout.
+- Búsqueda de contactos por nombre o correo.
+- Cambio de orden entre más reciente y más antiguo.
+
+### Documentación
+
+Finalmente se utilizaron aproximadamente:
+
+```text
+15 minutos
+```
+
+para documentar:
+
+- Instalación.
+- Ejecución local.
+- Arquitectura.
+- API.
+- Decisiones técnicas.
+- Uso de Inteligencia Artificial.
+
+---
